@@ -1,6 +1,6 @@
 from confluent_kafka import Consumer
+from datetime import datetime
 from threading import Thread
-import json
 
 class KafkaConsumer:
     def __init__(self, conf:dict):
@@ -32,31 +32,40 @@ class KafkaConsumerStream(KafkaConsumer):
             self.consumer_client.close()
         
     def tasks(self, msg):
-        # read datas (topic, partition, key, message)
+        # read datas (topic, partition, key, message, nowdate)
         topic = msg.topic()
         partition = msg.partition()
         key = msg.key().decode('utf-8') if msg.key() else None
         value = msg.value().decode('utf-8')
-        # value_type = type(value)
-        # print(f"topic: {topic}, partition: {partition}, key: {key}, value: {value}, value type: {value_type}")
+        nowdate = datetime.fromtimestamp(msg.timestamp()[-1]).strftime('%Y-%m-%d %H:%M:%S')
         
         threads = []
-        threads.append(Thread(target = self.insert_to_mysql, args = (key, value)))
-        threads.append(Thread(target = self.define_grade, args = (topic, key, value)))
+        threads.append(Thread(target = self.insert_measurement_to_mysql, args = (key, value, nowdate)))
+        threads.append(Thread(target = self.define_grade, args = (topic, key, value, nowdate)))
         for thread in threads:
             thread.start()
         
-    def insert_to_mysql(self, key, value):
+    def insert_measurement_to_mysql(self, key, value, nowdate):
         sensor_id = key
         measurement = value
+        insert_date = nowdate
+        print("test")
+    
+    def insert_alert_to_mysql(self, key, value, nowdate):
+        sensor_id = key
+        measurement = value
+        insert_date = nowdate
         print("test")
         
-    def define_grade(self, topic, key, value):
+    def define_grade(self, topic, key, value, nowdate):
         location_id = topic.split("_")[-1]
         sensor_id = key
         measurement = value
-        print("test")
+        insert_date = nowdate
         
+        self.insert_alert_to_mysql(key, value, nowdate)
+        
+
 if __name__ == "__main__":
     conf = {'bootstrap.servers': 'localhost:9092',         
             'group.id': 'TEST',
