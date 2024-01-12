@@ -9,14 +9,10 @@ def create_topics():
     conf = {'bootstrap.servers': 'localhost:9092'}
     admin = KafkaAdmin(conf = conf)
 
-    # topic = location_id
-    # partition = 
-    # key = sensor_id
-    # message = measurement
-
     # create topics
     name_list = ["location_4", "location_7", "location_8"]
-    num_partitions = [1, 4, 3]
+    num_partitions = [2, 4, 3]
+    admin.delete_topics(name_list = name_list)
     admin.create_topics(name_list = name_list, num_partitions = num_partitions)
 
 if __name__ == "__main__":

@@ -1,8 +1,7 @@
-import traceback, requests, os, sys
+import os, sys
 
 sys.path.append(f"{os.path.dirname(os.path.abspath(__file__))}/../lib")
 from consumer_class import KafkaConsumerStream
-from notification_lib import send_line_noti_thread
 
 # define main
 def main():
@@ -21,7 +20,6 @@ def main():
     # report exception & restart script
     except Exception as E:
         print(E) # <--- fix
-        send_line_noti_thread(E) # <--- fix
         print("RESTARTING SCRIPT.") # <--- fix
         main()
 
