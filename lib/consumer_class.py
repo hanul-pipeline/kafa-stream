@@ -48,7 +48,7 @@ class KafkaConsumerStream(KafkaConsumer):
             thread.start()
         
     def insert_measurement_to_mysql(self, key, value, nowdate):
-        from mysql_libs import execute_query
+        from mysql_lib import execute_query
         
         # define params
         sensor_id = key
